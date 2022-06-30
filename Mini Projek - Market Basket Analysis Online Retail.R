@@ -36,55 +36,56 @@ retail_online %>%
 supportLevels <- c(0.1, 0.05, 0.01, 0.005)
 confidenceLevels <- c(0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)
 
-# Variabel Kosong 
+# Membuat variabel Kosong 
 rules_sp10 <- NULL
 rules_sp5 <- NULL
 rules_sp1 <- NULL
 rules_sp0.5 <- NULL
 
-# Apriori algorithm with a support level of 10%
+# Membuat algoritma Apriori dengan tingkat support 10%
 for (i in 1:length(confidenceLevels)) {
   rules_sp10[i] <- length(apriori(data_retail, parameter=list(sup=supportLevels[1], 
                    conf=confidenceLevels[i], target="rules")))
 }
 
-# Apriori algorithm with a support level of 5%
+# Membuat algoritma Apriori dengan tingkat support 5%
 for (i in 1:length(confidenceLevels)){
   rules_sp5[i] <- length(apriori(data_retail, parameter=list(sup=supportLevels[2], 
                   conf=confidenceLevels[i], target="rules")))
 }
 
-# Apriori algorithm with a support level of 1%
+# Membuat algoritma Apriori dengan tingkat support 1%
 for (i in 1:length(confidenceLevels)){
   rules_sp1[i] <- length(apriori(data_retail, parameter=list(sup=supportLevels[3], 
                   conf=confidenceLevels[i], target="rules")))
 }
 
-# Apriori algorithm with a support level of 0.5%
+# Membuat algoritma Apriori dengan tingkat support 0.5%
 for (i in 1:length(confidenceLevels)){
   rules_sp0.5[i] <- length(apriori(data_retail, parameter=list(sup=supportLevels[4], 
                     conf=confidenceLevels[i], target="rules")))
 }
 
+# Setelah mendapat variabel berisi rules dari tingkat support berbeda, selanjutnya tahap pemilihan tingkat support dan confidence
 # Data frame
 num_rules <- data.frame(rules_sp10, rules_sp5, rules_sp1, rules_sp0.5, confidenceLevels)
 
-# Number of rules found with a support level of 10%, 5%, 1% and 0.5%
+# Menampilkan jumlah rules yang muncul dari tingkat support 10%, 5%, 1% dan 0.5%
 ggplot(data=num_rules, aes(x=confidenceLevels)) +
   
-  # Plot line and points (support level of 10%)
+  # Plot line dan points (support 10%)
   geom_line(aes(y=rules_sp10, colour="Support level of 10%")) + 
   geom_point(aes(y=rules_sp10, colour="Support level of 10%")) +
   
-  # Plot line and points (support level of 5%)
+  # Plot line dan points (support 5%)
   geom_line(aes(y=rules_sp5, colour="Support level of 5%")) +
   geom_point(aes(y=rules_sp5, colour="Support level of 5%")) +
   
-  # Plot line and points (support level of 1%)
+  # Plot line dan points (support 1%)
   geom_line(aes(y=rules_sp1, colour="Support level of 1%")) + 
   geom_point(aes(y=rules_sp1, colour="Support level of 1%")) +
   
-  # Plot line and points (support level of 0.5%)
+  # Plot line dan points (support 0.5%)
   geom_line(aes(y=rules_sp0.5, colour="Support level of 0.5%")) +
   geom_point(aes(y=rules_sp0.5, colour="Support level of 0.5%")) +
   
@@ -94,10 +95,13 @@ ggplot(data=num_rules, aes(x=confidenceLevels)) +
   theme_bw() +
   theme(legend.title=element_blank())
 
-# Apriori algorithm execution with a support level of 1% and a confidence level of 50%
+# Memilih mana tingkat yang cocok untuk dipakai. Jika Rules yang muncul dari kombinasi support dan confidence terlalu besar maka data akan terlalu banyak untuk diproses
+# Sementara jika rules terlalu sedikit maka juga tidak memungkinkan untuk dipilih
+# Memilih algoritma Apriori dengan tingkat support 1% dan confidence 70%
 Apriori_data <- apriori(data_retail, parameter=list(sup=supportLevels[3], conf=0.7, target="rules"))
 inspect(Apriori_data)
 
+# Memvisualisasikan hubungan tiap item dengan Scatter Plot dan Graph
 # Scatter plot
 plot(Apriori_data, measure=c("support", "lift"), shading="confidence")
 
